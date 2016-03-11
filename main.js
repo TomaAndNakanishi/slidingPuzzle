@@ -42,15 +42,44 @@ $( function () {
 			context.fillStyle = 'rgb( 0, 0, 0)'; // funky pink
 			context.fillRect( this.x, this.y, PUZZLE_PIECE_SIZE, PUZZLE_PIECE_SIZE);
 		}
+	};
 
-		console.log( 'x : ', this.x, 'y : ', this.y, 'size : ', PUZZLE_PIECE_SIZE);
+	PuzzlePiece.prototype.click = function() {
+		this.id = -1;
+		console.log( this.id);
+	};
+
+	// Click Event
+	$( '#myCanvas').on( 'click', function( eve) {
+		var origin = $( event.target).offset();
+		var x = eve.pageX - origin.left;
+		var y = eve.pageY - origin.top;
+		console.log( 'x : ', x, 'y : ', y);
+
+		puzzleList.forEach( function( piece) {
+			if( isCollisionRect( x, y, 1, 1, piece.x, piece.y, PUZZLE_PIECE_SIZE, PUZZLE_PIECE_SIZE)) {
+				piece.click();
+			}
+		});
+	});
+
+	var isCollisionLine = function( aStart, aEnd, bStart, bEnd) {
+		return ( aStart <= bEnd) && ( aEnd >= bStart);
+	};
+
+	var isCollisionRect = function( aX, aY, aW, aH, bX, bY, bW, bH) {
+		return isCollisionLine( aX, aX + aW, bX, bX + bW)
+			&& isCollisionLine( aY, aY + aH	, bY, bY + bH);
 	};
 
 	var puzzleList = new Array( PUZZLE_PIECE_HRIZONTAL * PUZZLE_PIECE_VERTICAL);
 	generate();
 	puzzleList[ puzzleList.length - 1].id = -1;
-	puzzleList.forEach( function( piece) {
-		piece.draw();
-	});
+
+	setInterval( function() {
+		puzzleList.forEach( function( piece) {
+			piece.draw();
+		});
+	}, 100);
 
 });
